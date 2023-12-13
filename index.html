@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Ballgame</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      canvas {
+        background: #eee;
+        display: block;
+      }
+      .hint {
+        position: absolute;
+        left: 10px;
+        top: 10px; 
+        z-index: 1;
+        font-size: 1.5em;
+        font-family: "Lucida Console", "Courier New", monospace;
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="myCanvas"></canvas>
+    <div id="hint" class="hint">
+      <div>Space = add ball</div>
+      <div>B-Key = bubble collision</div>
+      <div>R-Key = rigid collision</div>
+      <div>move mouse to apply force...</div>
+    </div>
+    <div id="mode" class="hint"></div>
+    <script type="module" src="./game.js"></script>
+
+  </body>
+</html>
