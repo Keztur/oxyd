@@ -1,12 +1,23 @@
 let balls = []
+let force_fields = []
+
+const ff_radius = 50
+const force = 0.1
 
 export function run_sim(x_mouse_vec, y_mouse_vec, width, height, ctx, mode) {
+
+    draw_all_force_fields(ctx)
 
     let ball_count = balls.length
 
     ball_move(x_mouse_vec, y_mouse_vec, ball_count)
+
+    force_field_impact(ball_count)
+
+
     ball_ball_collision(mode, ball_count)
     ball_wall_collision(ctx, width, height, ball_count)
+
     
 }
 
@@ -31,6 +42,41 @@ export function add_ball() {
 
     let ball = {x: values[0], y: values[1], x_vec: values[2], y_vec: values[3], radius: values[4], color};
     balls.push(ball);
+}
+
+export function add_force_field(x, y) {
+
+    force_fields.push({x, y})
+
+}
+
+function draw_all_force_fields(ctx) {
+
+    for (let i = 0; i < force_fields.length; i++) {
+        draw_force_field(force_fields[i], ctx)
+    }
+
+}
+
+
+function force_field_impact(ball_count) {
+
+    for (let i = 0; i < force_fields.length; i++) {
+        for (let j = 0; j < ball_count; j++) {
+
+            const ff = force_fields[i]
+            const ball = balls[j]
+
+            if ((ball.x - ff.x) ** 2 + (ball.y - ff.y) ** 2 < ff_radius ** 2 ) {
+
+                ball.x_vec += (ff.x - ball.x) * force
+                ball.y_vec += (ff.y - ball.y) * force           
+
+            }
+
+        }
+    }
+
 }
 
 
@@ -206,8 +252,25 @@ function random_color() {
 
 function draw_ball(ctx, x, y, radius, color) {
     ctx.beginPath();
-    ctx.arc(x, y, radius, 0.0, 6.2831);
+    ctx.arc(x, y, radius, 0, 6.2831);
     ctx.fillStyle = color;   
+    ctx.fill();
+    ctx.closePath();
+}
+
+
+function draw_force_field(ff, ctx) {
+
+    const x = ff.x
+    const y = ff.y
+
+    const gradient = ctx.createRadialGradient(x, y, 0, x, y, ff_radius);
+    gradient.addColorStop(0, 'black');
+    gradient.addColorStop(1, 'white');
+
+    ctx.beginPath();
+    ctx.arc(x, y, 60, 0, 6.2813);
+    ctx.fillStyle = gradient;
     ctx.fill();
     ctx.closePath();
 }

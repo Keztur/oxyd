@@ -1,4 +1,4 @@
-import {run_sim, add_ball } from "./simulation.js";
+import {run_sim, add_ball, add_force_field } from "./simulation.js";
 
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
@@ -72,6 +72,9 @@ window.addEventListener("keydown", (event) => {
     switch (event.key) {
         case ' ':
             add_ball()
+            break
+        case 'f':
+            add_force_field(x_mouse, y_mouse)
             break
         case 'b':
             mode = 1
