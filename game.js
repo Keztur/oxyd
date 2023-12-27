@@ -1,17 +1,17 @@
-import {run_sim, add_ball, add_force_field } from "./simulation.js";
+import { runSim, addBall, addForceField } from './simulation.js'
 
-const canvas = document.getElementById("myCanvas");
-const ctx = canvas.getContext("2d");
+const canvas = document.getElementById('myCanvas')
+const ctx = canvas.getContext('2d')
 
-let x_mouse = 0;
-let y_mouse = 0;
-let x_lastmouse = 0;
-let y_lastmouse = 0;
+let xMouse = 0
+let yMouse = 0
+let xLastMouse = 0
+let yLastMouse = 0
 
 let width = 10
 let height = 10
 
-let mode = 2 //1:bubbles, 2:rigid
+let mode = 2 // 1:bubbles, 2:rigid
 
 resizeCanvas()
 
@@ -26,74 +26,67 @@ resizeCanvas()
 // start game render cycle
 setInterval(simulation, 10)
 
-setTimeout(() => document.getElementById("hint").remove(), 5000)
+setTimeout(() => document.getElementById('hint').remove(), 5000)
 
 // ### FUNCTIONS ######################################
-function simulation() {
+function simulation () {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+  const xMouseVec = xMouse - xLastMouse
+  const yMouseVec = yMouse - yLastMouse
 
-    let xMouseVec = x_mouse - x_lastmouse
-    let yMouseVec = y_mouse - y_lastmouse
+  runSim(xMouseVec, yMouseVec, width, height, ctx, mode)
 
-    run_sim(xMouseVec, yMouseVec, width, height, ctx, mode)
-
-    x_lastmouse = x_mouse
-    y_lastmouse = y_mouse
-
+  xLastMouse = xMouse
+  yLastMouse = yMouse
 }
-
 
 // move ball
-window.addEventListener("mousemove", (evt) => {
-   
-    if (x_mouse == 0) {
-        x_lastmouse = evt.clientX
-        y_lastmouse = evt.clientY
-    }
+window.addEventListener('mousemove', (evt) => {
+  if (xMouse === 0) {
+    xLastMouse = evt.clientX
+    yLastMouse = evt.clientY
+  }
 
-    x_mouse = evt.clientX
-    y_mouse = evt.clientY
+  xMouse = evt.clientX
+  yMouse = evt.clientY
+}, false)
 
-}, false);
+window.addEventListener('resize', resizeCanvas, false)
 
-window.addEventListener('resize', resizeCanvas, false);
+function resizeCanvas () {
+  canvas.width = window.innerWidth
+  canvas.height = window.innerHeight
 
-function resizeCanvas() {
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
-
-    width = canvas.width
-    height = canvas.height
+  width = canvas.width
+  height = canvas.height
 }
 
-window.addEventListener("keydown", (event) => {
-    
-    switch (event.key) {
-        case ' ':
-            add_ball()
-            break
-        case 'f':
-            add_force_field(x_mouse, y_mouse)
-            break
-        case 'b':
-            mode = 1
-            setModeHint("bubble")
-            break
-        case 'r':
-            mode = 2
-            setModeHint("rigid")
-            break
-}
-});
+window.addEventListener('keydown', (event) => {
+  switch (event.key) {
+    case ' ':
+      addBall()
+      break
+    case 'f':
+      addForceField(xMouse, yMouse)
+      break
+    case 'b':
+      mode = 1
+      setModeHint('bubble')
+      break
+    case 'r':
+      mode = 2
+      setModeHint('rigid')
+      break
+  }
+})
 
-
-function setModeHint(mode) {
-    const hint_node = document.getElementById("mode")
-    if (hint_node) {
-        hint_node.innerHTML = mode + " collision activated"
-        setTimeout(() => hint_node.innerHTML = "", 5000)
-    }
+function setModeHint (mode) {
+  const HintNode = document.getElementById('mode')
+  if (HintNode) {
+    HintNode.innerHTML = mode + ' collision activated'
+    setTimeout(() => HintNode.innerHTML = '', 5000)
+  }
 }
 
 // function drawCenter(color: string, x: number, y: number, size: number) {
@@ -103,7 +96,6 @@ function setModeHint(mode) {
 //     ctx.fill();
 //     ctx.closePath();
 // }
-
 
 // function inRadius(ax:number, bx:number, ay:number, by:number, radius:number) {
 
@@ -125,7 +117,6 @@ function setModeHint(mode) {
 //     return [x_new, y_new]
 // }
 
-
 // function reflect() {
 
 //     if (x < ballRadius || x > width - ballRadius) {
@@ -133,7 +124,7 @@ function setModeHint(mode) {
 //     } else {
 //         x_invert = 1
 //     }
-    
+
 //     if (y < ballRadius || y > height - ballRadius) {
 //         y_invert = -1
 //     } else {
@@ -142,44 +133,39 @@ function setModeHint(mode) {
 
 // }
 
-
-  
 // window.addEventListener("mousemove", (evt) => {
-   
+
 //     let mousePos = getMousePos(canvas, evt);
 
 //     if (mouseDown) {
 //         if (inRadius(mousePos.x, forcePos[0].x, mousePos.y, forcePos[0].y, 50)) {
 //             forcePos[0].x = mousePos.x + OffsetX
-//             forcePos[0].y = mousePos.y + OffsetY  
+//             forcePos[0].y = mousePos.y + OffsetY
 //         } else if (inRadius(mousePos.x, forcePos[1].x, mousePos.y, forcePos[1].y, 50)) {
 //             forcePos[1].x = mousePos.x + OffsetX
-//             forcePos[1].y = mousePos.y + OffsetY  
-//         } 
-//     } 
+//             forcePos[1].y = mousePos.y + OffsetY
+//         }
+//     }
 
-//     x_lastmouse = x_mouse
-//     y_lastmouse = y_mouse
-    
-//     x_mouse = evt.clientX
-//     y_mouse = evt.clientY
+//     xLastMouse = xMouse
+//     yLastMouse = yMouse
 
+//     xMouse = evt.clientX
+//     yMouse = evt.clientY
 
 // }, false);
-
-
 
 // canvas.addEventListener("mousedown", (evt) => {
 
 //     let mousePos = getMousePos(canvas, evt);
-    
+
 //     if (inRadius(mousePos.x, forcePos[0].x, mousePos.y, forcePos[0].y, 50)) {
 //         OffsetX = forcePos[0].x - mousePos.x
 //         OffsetY = forcePos[0].y - mousePos.y
 //     } else if (inRadius(mousePos.x, forcePos[1].x, mousePos.y, forcePos[1].y, 50)) {
 //         OffsetX = forcePos[1].x - mousePos.x
 //         OffsetY = forcePos[1].y - mousePos.y
-//     } 
+//     }
 
 //     mouseDown = true
 
