@@ -16,3 +16,10 @@ export class Ball {
       return `rgb(${r},${g},${b})` // Collect all to a css color string
     }
   }
+
+  export class ForceField {
+    constructor (x, y) {
+        this.x = x
+        this.y = y
+    }
+  }

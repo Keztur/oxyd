@@ -1,4 +1,4 @@
-import { Ball } from './library.js'
+import { Ball, ForceField } from './library.js'
 
 const balls = []
 const ForceFields = []
@@ -40,7 +40,7 @@ export function addBall () {
 }
 
 export function addForceField (x, y) {
-  ForceFields.push({ x, y })
+  ForceFields.push(new ForceField(x, y))
 }
 
 function drawAllForceFields (ctx) {
