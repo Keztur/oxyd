@@ -3,20 +3,20 @@ import { Ball, ForceField } from './library.js'
 const balls = []
 const ForceFields = []
 
-const ffRadius = 50
+const ff_Radius = 50
 const force = 0.1
 
 export function runSim (xMouseVec, yMouseVec, width, height, ctx, mode) {
-  drawAllForceFields(ctx)
-
+  
   const BallCount = balls.length
 
   BallMove(xMouseVec, yMouseVec, BallCount)
-
   ForceFieldsImpact(BallCount)
-
   BallBallCollision(mode, BallCount)
-  BallWallCollision(ctx, width, height, BallCount)
+  BallWallCollision(width, height, BallCount)
+  
+  drawForceFields(ctx)
+  drawBalls(ctx, BallCount)
 }
 
 export function addBall () {
@@ -43,7 +43,7 @@ export function addForceField (x, y) {
   ForceFields.push(new ForceField(x, y))
 }
 
-function drawAllForceFields (ctx) {
+function drawForceFields (ctx) {
   for (let i = 0; i < ForceFields.length; i++) {
     drawForceField(ForceFields[i], ctx)
   }
@@ -80,7 +80,7 @@ function BallMove (xMouseVec, yMouseVec, BallCount) {
   }
 }
 
-function BallWallCollision (ctx, width, height, BallCount) {
+function BallWallCollision (width, height, BallCount) {
   // ball-wall collision check
   for (let i = 0; i < BallCount; i++) {
     let reflected = [0, 0]
@@ -92,7 +92,11 @@ function BallWallCollision (ctx, width, height, BallCount) {
     reflected = reflect(balls[i].y, balls[i].yVec, balls[i].radius, height - balls[i].radius)
     balls[i].y = reflected[0]
     balls[i].yVec = reflected[1]
+  }
+}
 
+function drawBalls (ctx, BallCount) {
+  for (let i = 0; i < BallCount; i++) {
     drawBall(ctx, balls[i].x, balls[i].y, balls[i].radius, balls[i].color)
   }
 }
