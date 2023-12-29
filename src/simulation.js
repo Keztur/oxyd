@@ -207,16 +207,15 @@ function BallRectangleCollision () {
 
       const bx = ball.x
       const by = ball.y
-      const radius = ball.radius
       const rx = rect.x
       const ry = rect.y
-      const rw = rect.width
-      const rh = rect.height
 
-      const nx = Math.max(rx, Math.min(rx + rw, bx))
-      const ny = Math.max(ry, Math.min(ry + rh, by))
+      const nx = Math.max(rx, Math.min(rx + rect.width, bx))
+      const ny = Math.max(ry, Math.min(ry + rect.height, by))
 
       drawBall(nx, ny, 3, 'red')
+
+      // TODO: add pre collision check to optimize performance
 
       const xvec = bx - nx
       const yvec = by - ny
@@ -230,7 +229,7 @@ function BallRectangleCollision () {
       ctx.lineTo(nx + xnorm * 100, ny + ynorm * 100) // Draw a line to (150, 100)
       ctx.stroke() // Render the path
 
-      if (amount <= radius) {
+      if (amount <= ball.radius) {
         ball.x -= ball.xVec
         ball.y -= ball.yVec
 
