@@ -4,38 +4,38 @@ const balls = []
 const ForceFields = []
 const ffRadius = 50
 const force = 0.1
+let BallCount = 0
 
 export function runSim (xMouseVec, yMouseVec, width, height, ctx, mode) {
   
-  const BallCount = balls.length
-
-  BallMove(xMouseVec, yMouseVec, BallCount)
-  ForceFieldsImpact(BallCount)
-  BallBallCollision(mode, BallCount)
-  BallWallCollision(width, height, BallCount)
+  BallMove(xMouseVec, yMouseVec)
+  ForceFieldsImpact()
+  BallBallCollision(mode)
+  BallWallCollision(width, height)
   
   drawForceFields(ctx)
-  drawBalls(ctx, BallCount)
+  drawBalls(ctx)
 }
 
 export function addBall () {
-  const BallCount = balls.length
   let values = []
-
+  
   switch (BallCount) {
     case 0: values = [700.0, 200.0, 0.0, 0.0, 50.0]
-      break
+    break
     case 1: values = [100.0, 200.0, 7.0, 0.0, 15.0]
       break
     case 2: values = [700.0, 300.0, -7.0, 0.0, 50.0]
       break
     case 3: values = [100.0, 300.0, 5.0, 1.0, 15.0]
-      break
+    break
     default: values = [50.0, 50.0, Math.floor(Math.random() * 15), Math.floor(Math.random() * 15)]
   }
 
   const ball = new Ball(values[0], values[1], values[2], values[3], values[4])
+
   balls.push(ball)
+  BallCount++
 }
 
 export function addForceField (x, y) {
@@ -43,7 +43,7 @@ export function addForceField (x, y) {
 }
 
 
-function BallMove (xMouseVec, yMouseVec, BallCount) {
+function BallMove (xMouseVec, yMouseVec) {
   
   const friction = 0.994
   const force = 0.1
@@ -61,7 +61,7 @@ function BallMove (xMouseVec, yMouseVec, BallCount) {
   }
 }
 
-function BallBallCollision (mode, BallCount) {
+function BallBallCollision (mode) {
   // ball-ball collision check
 
   // loop through all balls
@@ -154,7 +154,7 @@ function BallBallCollision (mode, BallCount) {
   }
 }
 
-function BallWallCollision (width, height, BallCount) {
+function BallWallCollision (width, height) {
   // ball-wall collision check
   for (let i = 0; i < BallCount; i++) {
     let reflected = [0, 0]
@@ -181,7 +181,7 @@ function reflect (pos, vec, radius, border) {
 }
 
 
-function ForceFieldsImpact (BallCount) {
+function ForceFieldsImpact () {
   for (let i = 0; i < ForceFields.length; i++) {
     for (let j = 0; j < BallCount; j++) {
       const ff = ForceFields[i]
@@ -195,7 +195,7 @@ function ForceFieldsImpact (BallCount) {
   }
 }
 
-function drawBalls (ctx, BallCount) {
+function drawBalls (ctx) {
   for (let i = 0; i < BallCount; i++) {
     drawBall(ctx, balls[i].x, balls[i].y, balls[i].radius, balls[i].color)
   }
