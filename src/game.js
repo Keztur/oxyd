@@ -1,7 +1,7 @@
 import { runSim, addBall, addForceField, addRectangle } from './simulation.js'
 
 const canvas = document.getElementById('myCanvas')
-const ctx = canvas.getContext('2d')
+export const ctx = canvas.getContext('2d')
 
 let xMouse = 0
 let yMouse = 0
@@ -27,7 +27,7 @@ function simulation () {
   const xMouseVec = xMouse - xLastMouse
   const yMouseVec = yMouse - yLastMouse
 
-  runSim(xMouseVec, yMouseVec, width, height, ctx, mode)
+  runSim(xMouseVec, yMouseVec, width, height, mode)
 
   xLastMouse = xMouse
   yLastMouse = yMouse

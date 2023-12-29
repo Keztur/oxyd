@@ -1,4 +1,5 @@
 import { Ball, ForceField, Rectangle } from './library.js'
+import { ctx } from './game.js'
 
 const balls = []
 const ForceFields = []
@@ -7,16 +8,16 @@ const ffRadius = 50
 const force = 0.1
 let BallCount = 0
 
-export function runSim (xMouseVec, yMouseVec, width, height, ctx, mode) {
+export function runSim (xMouseVec, yMouseVec, width, height, mode) {
   BallMove(xMouseVec, yMouseVec)
   ForceFieldsImpact()
   BallBallCollision(mode)
   BallWallCollision(width, height)
-  BallRectangleCollision(ctx)
+  BallRectangleCollision()
 
-  drawForceFields(ctx)
-  drawBalls(ctx)
-  drawRectangles(ctx)
+  drawForceFields()
+  drawBalls()
+  drawRectangles()
 }
 
 export function addBall () {
@@ -198,7 +199,7 @@ function ForceFieldsImpact () {
   }
 }
 
-function BallRectangleCollision (ctx) {
+function BallRectangleCollision () {
   for (let i = 0; i < rectangles.length; i++) {
     for (let j = 0; j < BallCount; j++) {
       const rect = rectangles[i]
@@ -215,7 +216,7 @@ function BallRectangleCollision (ctx) {
       const nx = Math.max(rx, Math.min(rx + rw, bx))
       const ny = Math.max(ry, Math.min(ry + rh, by))
 
-      drawBall(ctx, nx, ny, 3, 'red')
+      drawBall(nx, ny, 3, 'red')
 
       const xvec = bx - nx
       const yvec = by - ny
@@ -247,13 +248,13 @@ function BallRectangleCollision (ctx) {
   }
 }
 
-function drawBalls (ctx) {
+function drawBalls () {
   for (let i = 0; i < BallCount; i++) {
-    drawBall(ctx, balls[i].x, balls[i].y, balls[i].radius, balls[i].color)
+    drawBall(balls[i].x, balls[i].y, balls[i].radius, balls[i].color)
   }
 }
 
-function drawBall (ctx, x, y, radius, color) {
+function drawBall (x, y, radius, color) {
   ctx.beginPath()
   ctx.arc(x, y, radius, 0, 6.2831)
   ctx.fillStyle = color
@@ -261,13 +262,13 @@ function drawBall (ctx, x, y, radius, color) {
   ctx.closePath()
 }
 
-function drawForceFields (ctx) {
+function drawForceFields () {
   for (let i = 0; i < ForceFields.length; i++) {
-    drawForceField(ForceFields[i], ctx)
+    drawForceField(ForceFields[i])
   }
 }
 
-function drawForceField (ff, ctx) {
+function drawForceField (ff) {
   const x = ff.x
   const y = ff.y
 
@@ -282,13 +283,13 @@ function drawForceField (ff, ctx) {
   ctx.closePath()
 }
 
-function drawRectangles (ctx) {
+function drawRectangles () {
   for (let i = 0; i < rectangles.length; i++) {
-    drawRectangle(rectangles[i], ctx)
+    drawRectangle(rectangles[i])
   }
 }
 
-function drawRectangle (r, ctx) {
+function drawRectangle (r) {
   ctx.fillStyle = 'black'
   ctx.fillRect(r.x, r.y, r.width, r.height)
 }
