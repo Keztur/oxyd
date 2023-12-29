@@ -1,34 +1,36 @@
-import { Ball, ForceField } from './library.js'
+import { Ball, ForceField, Rectangle } from './library.js'
 
 const balls = []
 const ForceFields = []
+const rectangles = []
 const ffRadius = 50
 const force = 0.1
 let BallCount = 0
 
 export function runSim (xMouseVec, yMouseVec, width, height, ctx, mode) {
-  
   BallMove(xMouseVec, yMouseVec)
   ForceFieldsImpact()
   BallBallCollision(mode)
   BallWallCollision(width, height)
-  
+  BallRectangleCollision(ctx)
+
   drawForceFields(ctx)
   drawBalls(ctx)
+  drawRectangles(ctx)
 }
 
 export function addBall () {
   let values = []
-  
+
   switch (BallCount) {
     case 0: values = [700.0, 200.0, 0.0, 0.0, 50.0]
-    break
+      break
     case 1: values = [100.0, 200.0, 7.0, 0.0, 15.0]
       break
     case 2: values = [700.0, 300.0, -7.0, 0.0, 50.0]
       break
     case 3: values = [100.0, 300.0, 5.0, 1.0, 15.0]
-    break
+      break
     default: values = [50.0, 50.0, Math.floor(Math.random() * 15), Math.floor(Math.random() * 15)]
   }
 
@@ -42,9 +44,11 @@ export function addForceField (x, y) {
   ForceFields.push(new ForceField(x, y))
 }
 
+export function addRectangle (x, y, width, height) {
+  rectangles.push(new Rectangle(x, y, width, height))
+}
 
 function BallMove (xMouseVec, yMouseVec) {
-  
   const friction = 0.994
   const force = 0.1
 
@@ -180,7 +184,6 @@ function reflect (pos, vec, radius, border) {
   return [pos, vec]
 }
 
-
 function ForceFieldsImpact () {
   for (let i = 0; i < ForceFields.length; i++) {
     for (let j = 0; j < BallCount; j++) {
@@ -190,6 +193,55 @@ function ForceFieldsImpact () {
       if ((ball.x - ff.x) ** 2 + (ball.y - ff.y) ** 2 < ffRadius ** 2) {
         ball.xVec += (ff.x - ball.x) * force
         ball.yVec += (ff.y - ball.y) * force
+      }
+    }
+  }
+}
+
+function BallRectangleCollision (ctx) {
+  for (let i = 0; i < rectangles.length; i++) {
+    for (let j = 0; j < BallCount; j++) {
+      const rect = rectangles[i]
+      const ball = balls[j]
+
+      const bx = ball.x
+      const by = ball.y
+      const radius = ball.radius
+      const rx = rect.x
+      const ry = rect.y
+      const rw = rect.width
+      const rh = rect.height
+
+      const nx = Math.max(rx, Math.min(rx + rw, bx))
+      const ny = Math.max(ry, Math.min(ry + rh, by))
+
+      drawBall(ctx, nx, ny, 3, 'red')
+
+      const xvec = bx - nx
+      const yvec = by - ny
+      const amount = Math.hypot(xvec, yvec)
+
+      let xnorm = xvec / amount
+      let ynorm = yvec / amount
+
+      ctx.beginPath() // Start a new path
+      ctx.moveTo(nx, ny) // Move the pen to (30, 50)
+      ctx.lineTo(nx + xnorm * 100, ny + ynorm * 100) // Draw a line to (150, 100)
+      ctx.stroke() // Render the path
+
+      if (amount <= radius) {
+        ball.x -= ball.xVec
+        ball.y -= ball.yVec
+
+        if (xnorm > 0) {
+          xnorm *= -1
+        }
+        if (ynorm > 0) {
+          ynorm *= -1
+        }
+
+        ball.xVec *= xnorm
+        ball.yVec *= ynorm
       }
     }
   }
@@ -228,4 +280,15 @@ function drawForceField (ff, ctx) {
   ctx.fillStyle = gradient
   ctx.fill()
   ctx.closePath()
+}
+
+function drawRectangles (ctx) {
+  for (let i = 0; i < rectangles.length; i++) {
+    drawRectangle(rectangles[i], ctx)
+  }
+}
+
+function drawRectangle (r, ctx) {
+  ctx.fillStyle = 'black'
+  ctx.fillRect(r.x, r.y, r.width, r.height)
 }
