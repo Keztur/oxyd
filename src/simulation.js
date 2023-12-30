@@ -216,9 +216,7 @@ function BallRectangleCollision () {
 
       drawBall(nx, ny, 3, 'red') // draw projection point
 
-      // TODO: add pre collision check to optimize performance
-
-      // Vector between closest position and ball center ("pointing vector")
+      // Vector between closest position on rectangle and ball center ("pointing vector")
       const xvec = bx - nx
       const yvec = by - ny
       const amount = Math.hypot(xvec, yvec)
@@ -231,10 +229,9 @@ function BallRectangleCollision () {
 
       // collision check
       if (amount <= ball.radius) {
-        // Set ball back to last pos
-        // TODO: better set ball back to collision position
-        ball.x -= ball.xVec
-        ball.y -= ball.yVec
+        // Solve collision by moving ball along pointing vector out of rectangle collision
+        ball.x = nx + xnorm * ball.radius
+        ball.y = ny + ynorm * ball.radius
 
         // reflection (invert ball movement vector)
         ball.xVec *= -Math.abs(xnorm)
