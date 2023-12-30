@@ -210,38 +210,35 @@ function BallRectangleCollision () {
       const rx = rect.x
       const ry = rect.y
 
+      // closest position of ball on rectangle surface (projection)
       const nx = Math.max(rx, Math.min(rx + rect.width, bx))
       const ny = Math.max(ry, Math.min(ry + rect.height, by))
 
-      drawBall(nx, ny, 3, 'red')
+      drawBall(nx, ny, 3, 'red') // draw projection point
 
       // TODO: add pre collision check to optimize performance
 
+      // Vector between closest position and ball center ("pointing vector")
       const xvec = bx - nx
       const yvec = by - ny
       const amount = Math.hypot(xvec, yvec)
 
-      let xnorm = xvec / amount
-      let ynorm = yvec / amount
+      // normalized pointing vector
+      const xnorm = xvec / amount
+      const ynorm = yvec / amount
 
-      ctx.beginPath() // Start a new path
-      ctx.moveTo(nx, ny) // Move the pen to (30, 50)
-      ctx.lineTo(nx + xnorm * 100, ny + ynorm * 100) // Draw a line to (150, 100)
-      ctx.stroke() // Render the path
+      drawLine(nx, ny, nx + xnorm * 100, ny + ynorm * 100) // draw pointing vector
 
+      // collision check
       if (amount <= ball.radius) {
+        // Set ball back to last pos
+        // TODO: better set ball back to collision position
         ball.x -= ball.xVec
         ball.y -= ball.yVec
 
-        if (xnorm > 0) {
-          xnorm *= -1
-        }
-        if (ynorm > 0) {
-          ynorm *= -1
-        }
-
-        ball.xVec *= xnorm
-        ball.yVec *= ynorm
+        // reflection (invert ball movement vector)
+        ball.xVec *= -Math.abs(xnorm)
+        ball.yVec *= -Math.abs(ynorm)
       }
     }
   }
@@ -259,6 +256,13 @@ function drawBall (x, y, radius, color) {
   ctx.fillStyle = color
   ctx.fill()
   ctx.closePath()
+}
+
+function drawLine (xFrom, yFrom, xTo, yTo) {
+  ctx.beginPath() // Start a new path
+  ctx.moveTo(xFrom, yFrom) // Move the pen to (30, 50)
+  ctx.lineTo(xTo, yTo) // Draw a line to (150, 100)
+  ctx.stroke() // Render the path
 }
 
 function drawForceFields () {
