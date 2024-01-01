@@ -1,9 +1,10 @@
-import { Ball, ForceField, Rectangle } from './library.js'
+import { Ball, ForceField, Rectangle, Square } from './library.js'
 import { ctx } from './game.js'
 
 const balls = []
 const ForceFields = []
 const rectangles = []
+const squares = []
 const ffRadius = 50
 const force = 0.1
 let BallCount = 0
@@ -14,10 +15,12 @@ export function runSim (xMouseVec, yMouseVec, width, height, mode) {
   BallBallCollision(mode)
   BallWallCollision(width, height)
   BallRectangleCollision()
+  BallSquareCollision()
 
   drawForceFields()
   drawBalls()
   drawRectangles()
+  drawSquares()
 }
 
 export function addBall () {
@@ -47,6 +50,10 @@ export function addForceField (x, y) {
 
 export function addRectangle (x, y, width, height) {
   rectangles.push(new Rectangle(x, y, width, height))
+}
+
+export function addSquare (x, y, width) {
+  squares.push(new Square(x, y, width))
 }
 
 function BallMove (xMouseVec, yMouseVec) {
@@ -214,6 +221,83 @@ function BallRectangleCollision () {
       const nx = Math.max(rx, Math.min(rx + rect.width, bx))
       const ny = Math.max(ry, Math.min(ry + rect.height, by))
 
+      if (bx === nx && by === ny) { // if center of ball is inside rectangle
+        continue // ignore collision (otherwise the following code would not work)
+      }
+
+      drawBall(nx, ny, 3, 'red') // draw projection point
+
+      // Vector between closest position on rectangle and ball center ("pointing vector")
+      const xvec = bx - nx
+      const yvec = by - ny
+      const amount = Math.hypot(xvec, yvec)
+
+      // normalized pointing vector
+      const xnorm = xvec / amount
+      const ynorm = yvec / amount
+
+      drawLine(nx, ny, nx + xnorm * 100, ny + ynorm * 100) // draw pointing vector
+
+      // collision check
+      if (amount <= ball.radius) {
+        // Solve collision by moving ball along pointing vector out of rectangle collision
+        ball.x = nx + xnorm * ball.radius
+        ball.y = ny + ynorm * ball.radius
+
+        // reflection (invert ball movement vector)
+        ball.xVec *= -Math.abs(xnorm)
+        ball.yVec *= -Math.abs(ynorm)
+      }
+    }
+  }
+}
+
+function BallSquareCollision () {
+  for (let i = 0; i < squares.length; i++) {
+    for (let j = 0; j < BallCount; j++) {
+      const square = squares[i]
+      const ball = balls[j]
+
+      const bx = ball.x
+      const by = ball.y
+      const rx = square.x
+      const ry = square.y
+      const width = square.width
+      const edgeRadius = width / 5
+      let xEdge = 0
+      let yEdge = 0
+
+      // closest position of ball on surface (projection)
+      let nx = Math.max(rx, Math.min(rx + width, bx))
+      let ny = Math.max(ry, Math.min(ry + width, by))
+
+      if (bx === nx && by === ny) { // if center of ball is inside rectangle
+        continue // ignore collision (otherwise the following code would not work)
+      }
+
+      if (nx < rx + edgeRadius) {
+        xEdge = rx + edgeRadius
+      } else if (nx > rx + width - edgeRadius) {
+        xEdge = rx + width - edgeRadius
+      }
+
+      if (ny < ry + edgeRadius) {
+        yEdge = ry + edgeRadius
+      } else if (ny > ry + width - edgeRadius) {
+        yEdge = ry + width - edgeRadius
+      }
+
+      if (xEdge !== 0 && yEdge !== 0) {
+        const xEdgeVec = bx - xEdge
+        const yEdgeVec = by - yEdge
+
+        const EdgeVecAmount = Math.hypot(xEdgeVec, yEdgeVec)
+        const EdgeFactor = EdgeVecAmount / edgeRadius
+
+        nx = xEdge + xEdgeVec / EdgeFactor
+        ny = yEdge + yEdgeVec / EdgeFactor
+      }
+
       drawBall(nx, ny, 3, 'red') // draw projection point
 
       // Vector between closest position on rectangle and ball center ("pointing vector")
@@ -292,4 +376,18 @@ function drawRectangles () {
 function drawRectangle (r) {
   ctx.fillStyle = 'black'
   ctx.fillRect(r.x, r.y, r.width, r.height)
+}
+
+function drawSquares () {
+  for (let i = 0; i < squares.length; i++) {
+    drawSquare(squares[i])
+  }
+}
+
+function drawSquare (r) {
+  ctx.fillStyle = 'black'
+  ctx.beginPath()
+  ctx.roundRect(r.x, r.y, r.width, r.width, r.width / 5)
+  ctx.fill()
+  ctx.closePath()
 }

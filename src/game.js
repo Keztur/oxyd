@@ -1,4 +1,4 @@
-import { runSim, addBall, addForceField, addRectangle } from './simulation.js'
+import { runSim, addBall, addForceField, addRectangle, addSquare } from './simulation.js'
 
 const canvas = document.getElementById('myCanvas')
 export const ctx = canvas.getContext('2d')
@@ -64,6 +64,9 @@ window.addEventListener('keydown', (event) => {
       break
     case 'g':
       addRectangle(xMouse, yMouse, 50, 50)
+      break
+    case 'h':
+      addSquare(xMouse, yMouse, 100)
       break
     case 'b':
       mode = 1
