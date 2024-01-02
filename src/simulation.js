@@ -292,6 +292,10 @@ function BallSquareCollision () {
         continue // ignore collision (otherwise the following code would not work)
       }
 
+      if (Math.hypot(bx - nx, by - ny) > ball.radius) {
+        continue
+      }
+
       // is closest point in any of the 4 edges (quarters)?
       if (nx < rx + edgeRadius) {
         xEdge = rx + edgeRadius
@@ -318,6 +322,9 @@ function BallSquareCollision () {
         ny = yEdge + yEdgeVec / EdgeFactor
       }
 
+      // const nUpdate = EdgeCorrection(nx, ny, rx, ry, bx, by, edgeRadius, width)
+      // nx = nUpdate.x
+      // ny = nUpdate.y
       // drawBall(nx, ny, 3, 'red') // draw projection point
 
       // Vector between closest position on rectangle and ball center ("pointing vector")
@@ -342,6 +349,39 @@ function BallSquareCollision () {
         ball.yVec -= BounceVector.y
       }
     }
+  }
+}
+
+function EdgeCorrection (nx, ny, rx, ry, bx, by, edgeRadius, width) {
+  let xEdge = 0
+  let yEdge = 0
+
+  // is closest point in any of the 4 edges (quarters)?
+  if (nx < rx + edgeRadius) {
+    xEdge = rx + edgeRadius
+  } else if (nx > rx + width - edgeRadius) {
+    xEdge = rx + width - edgeRadius
+  }
+
+  if (ny < ry + edgeRadius) {
+    yEdge = ry + edgeRadius
+  } else if (ny > ry + width - edgeRadius) {
+    yEdge = ry + width - edgeRadius
+  }
+
+  // if closest point is in any of the 4 rounded edges: update nx, ny
+  if (xEdge !== 0 && yEdge !== 0) {
+    // calculate vector from center of "edge spheres" to center of ball
+    const xEdgeVec = bx - xEdge
+    const yEdgeVec = by - yEdge
+
+    const EdgeVecAmount = Math.hypot(xEdgeVec, yEdgeVec)
+    const EdgeFactor = EdgeVecAmount / edgeRadius
+
+    nx = xEdge + xEdgeVec / EdgeFactor
+    ny = yEdge + yEdgeVec / EdgeFactor
+
+    return { x: nx, y: ny }
   }
 }
 
