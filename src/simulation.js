@@ -225,31 +225,48 @@ function BallRectangleCollision () {
         continue // ignore collision (otherwise the following code would not work)
       }
 
-      drawBall(nx, ny, 3, 'red') // draw projection point
-
       // Vector between closest position on rectangle and ball center ("pointing vector")
       const xvec = bx - nx
       const yvec = by - ny
       const amount = Math.hypot(xvec, yvec)
 
-      // normalized pointing vector
-      const xnorm = xvec / amount
-      const ynorm = yvec / amount
-
-      drawLine(nx, ny, nx + xnorm * 100, ny + ynorm * 100) // draw pointing vector
-
       // collision check
       if (amount <= ball.radius) {
+        // normalized pointing vector
+        const xnorm = xvec / amount
+        const ynorm = yvec / amount
+
+        const BounceVector = RectangleBounceVector(xnorm, ynorm, ball.xVec, ball.yVec)
+
         // Solve collision by moving ball along pointing vector out of rectangle collision
         ball.x = nx + xnorm * ball.radius
         ball.y = ny + ynorm * ball.radius
 
         // reflection (invert ball movement vector)
-        ball.xVec *= -Math.abs(xnorm)
-        ball.yVec *= -Math.abs(ynorm)
+        ball.xVec -= BounceVector.x
+        ball.yVec -= BounceVector.y
+
+        ball.x += ball.xVec
+        ball.y += ball.yVec
       }
     }
   }
+}
+
+function RectangleBounceVector (xnorm, ynorm, xVec, yVec) {
+  // tangent vector
+  const xTan = ynorm
+  const yTan = -xnorm
+  // drawLine(nx, ny, nx + xTan * 100, ny + yTan * 100) // draw tangent vector
+
+  // velocity vector component parallel to tangent
+  const length = xVec * xTan + yVec * yTan // dot product of relative vel vector and tangent vector
+
+  // calculate perpendicular vector component (bounce vector)
+  const xVertical = (xVec - xTan * length) * 2
+  const yVertical = (yVec - yTan * length) * 2
+
+  return { x: xVertical, y: yVertical }
 }
 
 function BallSquareCollision () {
@@ -275,6 +292,7 @@ function BallSquareCollision () {
         continue // ignore collision (otherwise the following code would not work)
       }
 
+      // is closest point in any of the 4 edges (quarters)?
       if (nx < rx + edgeRadius) {
         xEdge = rx + edgeRadius
       } else if (nx > rx + width - edgeRadius) {
@@ -287,7 +305,9 @@ function BallSquareCollision () {
         yEdge = ry + width - edgeRadius
       }
 
+      // if closest point is in any of the 4 rounded edges: update nx, ny
       if (xEdge !== 0 && yEdge !== 0) {
+        // calculate vector from center of "edge spheres" to center of ball
         const xEdgeVec = bx - xEdge
         const yEdgeVec = by - yEdge
 
@@ -298,28 +318,28 @@ function BallSquareCollision () {
         ny = yEdge + yEdgeVec / EdgeFactor
       }
 
-      drawBall(nx, ny, 3, 'red') // draw projection point
+      // drawBall(nx, ny, 3, 'red') // draw projection point
 
       // Vector between closest position on rectangle and ball center ("pointing vector")
       const xvec = bx - nx
       const yvec = by - ny
       const amount = Math.hypot(xvec, yvec)
 
-      // normalized pointing vector
-      const xnorm = xvec / amount
-      const ynorm = yvec / amount
-
-      drawLine(nx, ny, nx + xnorm * 100, ny + ynorm * 100) // draw pointing vector
-
       // collision check
       if (amount <= ball.radius) {
+        // normalized pointing vector
+        const xnorm = xvec / amount
+        const ynorm = yvec / amount
+
+        const BounceVector = RectangleBounceVector(xnorm, ynorm, ball.xVec, ball.yVec)
+
         // Solve collision by moving ball along pointing vector out of rectangle collision
         ball.x = nx + xnorm * ball.radius
         ball.y = ny + ynorm * ball.radius
 
         // reflection (invert ball movement vector)
-        ball.xVec *= -Math.abs(xnorm)
-        ball.yVec *= -Math.abs(ynorm)
+        ball.xVec -= BounceVector.x
+        ball.yVec -= BounceVector.y
       }
     }
   }
@@ -339,12 +359,12 @@ function drawBall (x, y, radius, color) {
   ctx.closePath()
 }
 
-function drawLine (xFrom, yFrom, xTo, yTo) {
-  ctx.beginPath() // Start a new path
-  ctx.moveTo(xFrom, yFrom) // Move the pen to (30, 50)
-  ctx.lineTo(xTo, yTo) // Draw a line to (150, 100)
-  ctx.stroke() // Render the path
-}
+// function drawLine (xFrom, yFrom, xTo, yTo) {
+//   ctx.beginPath() // Start a new path
+//   ctx.moveTo(xFrom, yFrom) // Move the pen to (30, 50)
+//   ctx.lineTo(xTo, yTo) // Draw a line to (150, 100)
+//   ctx.stroke() // Render the path
+// }
 
 function drawForceFields () {
   for (let i = 0; i < ForceFields.length; i++) {

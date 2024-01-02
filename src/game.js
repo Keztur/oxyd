@@ -63,10 +63,10 @@ window.addEventListener('keydown', (event) => {
       addForceField(xMouse, yMouse)
       break
     case 'g':
-      addRectangle(xMouse, yMouse, 50, 50)
+      addRectangle(xMouse, yMouse, 100, 100)
       break
     case 'h':
-      addSquare(xMouse, yMouse, 100)
+      addSquare(xMouse, yMouse, 50)
       break
     case 'b':
       mode = 1
