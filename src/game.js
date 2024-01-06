@@ -12,13 +12,14 @@ let width = 10
 let height = 10
 
 let mode = 2 // 1:bubbles, 2:rigid
+let Obstacle = ''
 
 resizeCanvas()
 
 // start game render cycle
 setInterval(simulation, 10)
 
-setTimeout(() => document.getElementById('hint').remove(), 5000)
+setTimeout(() => document.getElementById('hint').remove(), 8000)
 
 // ### FUNCTIONS ######################################
 function simulation () {
@@ -86,6 +87,34 @@ function setModeHint (mode) {
     setTimeout(() => HintNode.innerHTML = '', 5000)
   }
 }
+
+function ChangeObstacle (type) {
+  Array.from(document.getElementsByClassName('active')).forEach(el => el.classList.remove('active'))
+
+  if (Obstacle === type) {
+    Obstacle = ''
+    document.body.style.cursor = ''
+  } else {
+    Obstacle = type
+    document.getElementById(type).classList.add('active')
+    document.body.style.cursor = 'crosshair'
+  }
+}
+window.ChangeObstacle = ChangeObstacle
+
+canvas.addEventListener('mousedown', (evt) => {
+  switch (Obstacle) {
+    case 'force':
+      addForceField(xMouse, yMouse)
+      break
+    case 'rect':
+      addRectangle(xMouse, yMouse, 100, 100)
+      break
+    case 'square':
+      addSquare(xMouse, yMouse, 50)
+      break
+  }
+})
 
 // window.addEventListener("mousemove", (evt) => {
 
