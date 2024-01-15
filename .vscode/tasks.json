@@ -1,0 +1,41 @@
+{
+    "version": "2.0.0",
+    "tasks":[
+        {
+            "label": "update_io",
+            "dependsOn": [
+                "copy_src",
+                "copy_index"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "copy_src",
+            "command": "cp",
+            "args": [
+                "${workspaceFolder}/src/*",
+                "${workspaceFolder}/../Keztur.github.io/src/",
+                "-r"
+            ],
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "copy_index",
+            "command": "cp",
+            "args": [
+                "${workspaceFolder}/index.html",
+                "${workspaceFolder}/../Keztur.github.io/",
+                "-r"
+            ],
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
