@@ -47,6 +47,9 @@
         background-color: black !important;
         color: white;
       }
+      #debug {
+        margin: 5px;
+      }
     </style>
   </head>
   <body>
@@ -62,6 +65,7 @@
       <div id="rect" onclick="ChangeObstacle(this.id)">Rectangle</div>
       <div id="square" onclick="ChangeObstacle(this.id)">Rounded</div>
       <div id="force" onclick="ChangeObstacle(this.id)">Force Field</div>
+      <input type="checkbox" name="debug" id="debug" onclick="updateDebug(this.checked)"><label for="debug">debug</label>
     </div>
     <script type="module" src="./src/game.js"></script>
 

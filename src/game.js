@@ -1,4 +1,4 @@
-import { runSim, addBall, addForceField, addRectangle, addSquare, drawLine } from './simulation.js'
+import { runSim, addBall, addForceField, addRectangle, addSquare } from './simulation.js'
 
 const canvas = document.getElementById('myCanvas')
 export const ctx = canvas.getContext('2d')
@@ -22,8 +22,6 @@ resizeCanvas()
 // start game render cycle
 setInterval(simulation, 10)
 
-let dragIntervalID = 0
-
 setTimeout(() => document.getElementById('hint').remove(), 8000)
 
 function drawObstacle () {
@@ -32,7 +30,6 @@ function drawObstacle () {
       drawLine(xMouseStartDrag, yMouseStartDrag, xMouse, yMouse)
       break
     case 'rect':
-    case 'square':
       drawRectLine()
       break
   }
@@ -45,8 +42,11 @@ canvas.addEventListener('mousedown', (evt) => {
   yMouseStartDrag = yMouse
 
   if (obstacle) {
-    drag = true
-    dragIntervalID = setInterval(drawObstacle, 10)
+    if (obstacle === 'square') {
+      addSquare(xMouse, yMouse, 50)
+    } else {
+      drag = true
+    }
   }
 })
 
@@ -63,16 +63,12 @@ window.addEventListener('mousemove', (evt) => {
 window.addEventListener('mouseup', (evt) => {
   if (drag) {
     drag = false
-    clearInterval(dragIntervalID)
     switch (obstacle) {
       case 'force':
         addFF()
         break
       case 'rect':
         addRect()
-        break
-      case 'square':
-        addSquare(xMouse, yMouse, 50)
         break
     }
   }
@@ -122,6 +118,10 @@ function simulation () {
 
   xLastMouse = xMouse
   yLastMouse = yMouse
+
+  if (drag) {
+    drawObstacle()
+  }
 }
 
 function resizeCanvas () {
@@ -155,7 +155,17 @@ function ChangeObstacle (type) {
 
 function drawRectLine () {
   if (xMouse > xMouseStartDrag && yMouse > yMouseStartDrag) {
-    ctx.strokeStyle = 'black'
+    ctx.strokeStyle = 'red'
+    ctx.setLineDash([10, 10])
     ctx.strokeRect(xMouseStartDrag, yMouseStartDrag, xMouse - xMouseStartDrag, yMouse - yMouseStartDrag)
   }
+}
+
+function drawLine (xFrom, yFrom, xTo, yTo) {
+  ctx.strokeStyle = 'red'
+  ctx.beginPath() // Start a new path
+  ctx.moveTo(xFrom, yFrom) // Move the pen to (30, 50)
+  ctx.lineTo(xTo, yTo) // Draw a line to (150, 100)
+  ctx.setLineDash([10, 10])
+  ctx.stroke() // Render the path
 }
