@@ -5,8 +5,7 @@ const balls = []
 const ForceFields = []
 const rectangles = []
 const squares = []
-const ffRadius = 50
-const force = 0.1
+const force = 0.01
 let BallCount = 0
 const debug = true
 
@@ -45,8 +44,8 @@ export function addBall () {
   BallCount++
 }
 
-export function addForceField (x, y) {
-  ForceFields.push(new ForceField(x, y))
+export function addForceField (x, y, radius) {
+  ForceFields.push(new ForceField(x, y, radius))
 }
 
 export function addRectangle (x, y, width, height) {
@@ -198,8 +197,7 @@ function ForceFieldsImpact () {
     for (let j = 0; j < BallCount; j++) {
       const ff = ForceFields[i]
       const ball = balls[j]
-
-      if ((ball.x - ff.x) ** 2 + (ball.y - ff.y) ** 2 < ffRadius ** 2) {
+      if ((ball.x - ff.x) ** 2 + (ball.y - ff.y) ** 2 < ff.radius ** 2) {
         ball.xVec += (ff.x - ball.x) * force
         ball.yVec += (ff.y - ball.y) * force
       }
@@ -392,7 +390,7 @@ function drawBall (x, y, radius, color) {
   ctx.closePath()
 }
 
-function drawLine (xFrom, yFrom, xTo, yTo) {
+export function drawLine (xFrom, yFrom, xTo, yTo) {
   ctx.beginPath() // Start a new path
   ctx.moveTo(xFrom, yFrom) // Move the pen to (30, 50)
   ctx.lineTo(xTo, yTo) // Draw a line to (150, 100)
@@ -409,12 +407,12 @@ function drawForceField (ff) {
   const x = ff.x
   const y = ff.y
 
-  const gradient = ctx.createRadialGradient(x, y, 0, x, y, ffRadius)
+  const gradient = ctx.createRadialGradient(x, y, 0, x, y, ff.radius)
   gradient.addColorStop(0, 'black')
   gradient.addColorStop(1, 'white')
 
   ctx.beginPath()
-  ctx.arc(x, y, 60, 0, 6.2813)
+  ctx.arc(x, y, ff.radius, 0, 6.2813)
   ctx.fillStyle = gradient
   ctx.fill()
   ctx.closePath()
