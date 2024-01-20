@@ -30,24 +30,24 @@
         padding: 5px;
         /* color: red; */
       }
-      .menu div {
+      .obstacle {
         width: 110px;
         background-color: silver;
         margin: 3px;
         padding: 2px;
         user-select: none;
       }
-      .menu div:hover {
+      .obstacle:hover {
         color: white;
       }
-      .menu div:active {
+      .obstacle:active {
         background-color: black;
       }
       .active {
         background-color: black !important;
         color: white;
       }
-      #debug {
+      input {
         margin: 5px;
       }
     </style>
@@ -62,10 +62,11 @@
     </div>
     <div id="mode" class="hint"></div>
     <div id="menu" class="menu">
-      <div id="rect" onclick="ChangeObstacle(this.id)">Rectangle</div>
-      <div id="square" onclick="ChangeObstacle(this.id)">Rounded</div>
-      <div id="force" onclick="ChangeObstacle(this.id)">Force Field</div>
-      <input type="checkbox" name="debug" id="debug" onclick="updateDebug(this.checked)"><label for="debug">debug</label>
+      <div id="rect" class="obstacle" onclick="ChangeObstacle(this.id)">Rectangle</div>
+      <div id="square" class="obstacle" onclick="ChangeObstacle(this.id)">Rounded</div>
+      <div id="force" class="obstacle" onclick="ChangeObstacle(this.id)">Force Field</div>
+      <div><input type="checkbox" name="shading" id="shading" onclick="updateShading(this.checked)"><label for="shading">shading</label></div>
+      <div><input type="checkbox" name="debug" id="debug" onclick="updateDebug(this.checked)"><label for="debug">debug</label></div>
     </div>
     <script type="module" src="./src/game.js"></script>
 

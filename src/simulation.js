@@ -7,12 +7,19 @@ const rectangles = []
 const squares = []
 const force = 0.01
 let BallCount = 0
+const lightAngle = 0.4
+let shading = false
 let debug = false
 
 function updateDebug (flag) {
   debug = flag
 }
 window.updateDebug = updateDebug
+
+function updateShading (flag) {
+  shading = flag
+}
+window.updateShading = updateShading
 
 export function runSim (xMouseVec, yMouseVec, width, height, mode) {
   BallMove(xMouseVec, yMouseVec)
@@ -23,6 +30,9 @@ export function runSim (xMouseVec, yMouseVec, width, height, mode) {
   BallSquareCollision()
 
   drawForceFields()
+  if (shading) {
+    drawBallShadows()
+  }
   drawBalls()
   drawRectangles()
   drawSquares()
@@ -386,13 +396,54 @@ function drawBalls () {
     drawBall(balls[i].x, balls[i].y, balls[i].radius, balls[i].color)
   }
 }
+function drawBallShadows () {
+  for (let i = 0; i < BallCount; i++) {
+    drawBallShadow(balls[i].x, balls[i].y, balls[i].radius)
+  }
+}
+
+function drawBallShadow (x, y, radius) {
+  const offset = radius * lightAngle * 0.4
+  ctx.beginPath()
+  ctx.arc(x + offset, y + offset, radius, 0, 6.2831)
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
+  ctx.fill()
+  ctx.closePath()
+}
 
 function drawBall (x, y, radius, color) {
   ctx.beginPath()
   ctx.arc(x, y, radius, 0, 6.2831)
-  ctx.fillStyle = color
+
+  if (shading) {
+    const offset = radius * lightAngle
+    const gradient = ctx.createRadialGradient(x - offset, y - offset, 0, x - offset, y - offset, radius * (1 + lightAngle * 0.8))
+    gradient.addColorStop(1, shadeColor(color, -0.3))
+    // gradient.addColorStop(0.4, color)
+    gradient.addColorStop(0.2, shadeColor(color, 0.4))
+    gradient.addColorStop(0, shadeColor(color, 0.5))
+    ctx.fillStyle = gradient
+  } else {
+    ctx.fillStyle = color
+  }
+
   ctx.fill()
   ctx.closePath()
+}
+
+function shadeColor (color, factor) {
+  // convert rgb string to array: "rgb(11,123,1)" -> [11, 123, 1]
+  const rgb = color.match(/\d+/g).map(Number)
+
+  for (let i = 0; i < 4; i++) {
+    if (factor > 0) {
+      rgb[i] = Math.floor(rgb[i] + (255 - rgb[i]) * factor)
+    } else {
+      rgb[i] = Math.floor(rgb[i] + rgb[i] * factor)
+    }
+  }
+
+  return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`
 }
 
 export function drawLine (xFrom, yFrom, xTo, yTo) {
@@ -415,7 +466,7 @@ function drawForceField (ff) {
   const y = ff.y
 
   const gradient = ctx.createRadialGradient(x, y, 0, x, y, ff.radius)
-  gradient.addColorStop(0, 'black')
+  gradient.addColorStop(0, 'lightslategrey')
   gradient.addColorStop(1, 'white')
 
   ctx.beginPath()
