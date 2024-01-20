@@ -1,5 +1,5 @@
 import { Ball, ForceField, Rectangle, Square } from './library.js'
-import { ctx } from './game.js'
+import { ctx, xMouse, yMouse, mousedown, drag } from './game.js'
 
 const balls = []
 const ForceFields = []
@@ -7,9 +7,10 @@ const rectangles = []
 const squares = []
 const force = 0.01
 let BallCount = 0
-const lightAngle = 0.4
 let shading = false
 let debug = false
+let changelight = false
+const lightAngle = [-0.4, -0.4]
 
 function updateDebug (flag) {
   debug = flag
@@ -22,7 +23,9 @@ function updateShading (flag) {
 window.updateShading = updateShading
 
 export function runSim (xMouseVec, yMouseVec, width, height, mode) {
-  BallMove(xMouseVec, yMouseVec)
+  if (!drag && !changelight) {
+    BallMove(xMouseVec, yMouseVec)
+  }
   ForceFieldsImpact()
   BallBallCollision(mode)
   BallWallCollision(width, height)
@@ -36,6 +39,59 @@ export function runSim (xMouseVec, yMouseVec, width, height, mode) {
   drawBalls()
   drawRectangles()
   drawSquares()
+
+  if (shading) {
+    drawLightPicker()
+  }
+}
+
+function drawLightPicker () {
+  const radius = 40
+  const x = 50
+  const y = 200
+  let xOff = radius * lightAngle[0]
+  let yOff = radius * lightAngle[1]
+
+  if (mousedown && !drag) {
+    const vector = Math.hypot(xMouse - x, yMouse - y)
+
+    if (vector < radius) {
+      changelight = true
+    }
+
+    const xLimit = ((xMouse - x) / vector) * (radius - 10)
+    const yLimit = ((yMouse - y) / vector) * (radius - 10)
+
+    if (changelight) {
+      xOff = xMouse - x
+      yOff = yMouse - y
+
+      // limits movement range of yellow picker
+      if ((xOff > 0 && xOff > xLimit) || (xOff < 0 && xOff < xLimit)) {
+        xOff = xLimit
+      }
+      if ((yOff > 0 && yOff > yLimit) || (yOff < 0 && yOff < yLimit)) {
+        yOff = yLimit
+      }
+
+      lightAngle[0] = xOff / radius
+      lightAngle[1] = yOff / radius
+    }
+  } else {
+    changelight = false
+  }
+
+  ctx.beginPath()
+  ctx.arc(x, y, radius, 0, 6.2831)
+  ctx.fillStyle = 'grey'
+  ctx.fill()
+  ctx.closePath()
+
+  ctx.beginPath()
+  ctx.arc(x + xOff, y + yOff, 10, 0, 6.2831)
+  ctx.fillStyle = 'yellow'
+  ctx.fill()
+  ctx.closePath()
 }
 
 export function addBall () {
@@ -403,9 +459,10 @@ function drawBallShadows () {
 }
 
 function drawBallShadow (x, y, radius) {
-  const offset = radius * lightAngle * 0.4
+  const offsetX = radius * -lightAngle[0] * 0.4
+  const offsetY = radius * -lightAngle[1] * 0.4
   ctx.beginPath()
-  ctx.arc(x + offset, y + offset, radius, 0, 6.2831)
+  ctx.arc(x + offsetX, y + offsetY, radius, 0, 6.2831)
   ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
   ctx.fill()
   ctx.closePath()
@@ -416,10 +473,10 @@ function drawBall (x, y, radius, color) {
   ctx.arc(x, y, radius, 0, 6.2831)
 
   if (shading) {
-    const offset = radius * lightAngle
-    const gradient = ctx.createRadialGradient(x - offset, y - offset, 0, x - offset, y - offset, radius * (1 + lightAngle * 0.8))
+    const offsetX = x + radius * lightAngle[0]
+    const offsetY = y + radius * lightAngle[1]
+    const gradient = ctx.createRadialGradient(offsetX, offsetY, 0, offsetX, offsetY, radius * 1.5)
     gradient.addColorStop(1, shadeColor(color, -0.3))
-    // gradient.addColorStop(0.4, color)
     gradient.addColorStop(0.2, shadeColor(color, 0.4))
     gradient.addColorStop(0, shadeColor(color, 0.5))
     ctx.fillStyle = gradient

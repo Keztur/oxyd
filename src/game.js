@@ -3,8 +3,8 @@ import { runSim, addBall, addForceField, addRectangle, addSquare } from './simul
 const canvas = document.getElementById('myCanvas')
 export const ctx = canvas.getContext('2d')
 
-let xMouse = 0
-let yMouse = 0
+export let xMouse = 0
+export let yMouse = 0
 let xLastMouse = 0
 let yLastMouse = 0
 let xMouseStartDrag = 0
@@ -15,7 +15,8 @@ let height = 10
 
 let mode = 2 // 1:bubbles, 2:rigid
 let obstacle = ''
-let drag = false
+export let drag = false
+export let mousedown = false
 
 resizeCanvas()
 
@@ -38,6 +39,7 @@ function drawObstacle () {
 window.ChangeObstacle = ChangeObstacle
 
 canvas.addEventListener('mousedown', (evt) => {
+  mousedown = true
   xMouseStartDrag = xMouse
   yMouseStartDrag = yMouse
 
@@ -61,6 +63,7 @@ window.addEventListener('mousemove', (evt) => {
 }, false)
 
 window.addEventListener('mouseup', (evt) => {
+  mousedown = false
   if (drag) {
     drag = false
     switch (obstacle) {
