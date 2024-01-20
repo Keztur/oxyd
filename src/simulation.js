@@ -435,7 +435,7 @@ function shadeColor (color, factor) {
   // convert rgb string to array: "rgb(11,123,1)" -> [11, 123, 1]
   const rgb = color.match(/\d+/g).map(Number)
 
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 3; i++) {
     if (factor > 0) {
       rgb[i] = Math.floor(rgb[i] + (255 - rgb[i]) * factor)
     } else {
