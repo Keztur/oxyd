@@ -519,7 +519,7 @@ export function drawLine (xFrom, yFrom, xTo, yTo) {
   ctx.beginPath() // Start a new path
   ctx.moveTo(xFrom, yFrom) // Move the pen to (30, 50)
   ctx.lineTo(xTo, yTo) // Draw a line to (150, 100)
-  ctx.strokeStyle = 'black'
+  ctx.strokeStyle = '#000000'
   ctx.setLineDash([])
   ctx.stroke() // Render the path
 }
@@ -536,7 +536,7 @@ function drawForceField (ff) {
 
   const gradient = ctx.createRadialGradient(x, y, 0, x, y, ff.radius)
   gradient.addColorStop(0, 'lightslategrey')
-  gradient.addColorStop(1, 'white')
+  gradient.addColorStop(1, '#ffffff')
 
   ctx.beginPath()
   ctx.arc(x, y, ff.radius, 0, 6.2813)
@@ -552,7 +552,7 @@ function drawRectangles () {
 }
 
 function drawRectangle (r) {
-  ctx.fillStyle = 'black'
+  ctx.fillStyle = '#000000'
   ctx.fillRect(r.x, r.y, r.width, r.height)
 }
 
@@ -563,7 +563,7 @@ function drawSquares () {
 }
 
 function drawSquare (r) {
-  ctx.fillStyle = 'black'
+  ctx.fillStyle = '#000000'
   ctx.beginPath()
   ctx.roundRect(r.x, r.y, r.width, r.width, r.width / 5)
   ctx.fill()
