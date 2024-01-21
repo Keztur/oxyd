@@ -306,7 +306,7 @@ function BallRectangleCollision () {
       const amount = Math.hypot(xvec, yvec)
 
       if (debug) {
-        drawBall(nx, ny, 3, 'red') // draw projection point
+        drawRedDot(nx, ny) // draw projection point
         drawLine(nx, ny, nx + xvec / amount * 100, ny + yvec / amount * 100) // draw pointing vector
         if ((bx - nx) ** 2 + (by - ny) ** 2 > ball.radius ** 2) {
           continue
@@ -388,7 +388,7 @@ function BallSquareCollision () {
       const amount = Math.hypot(xvec, yvec)
 
       if (debug) {
-        drawBall(nx, ny, 3, 'red') // draw projection point
+        drawRedDot(nx, ny, 3) // draw projection point
         drawLine(nx, ny, nx + xvec / amount * 100, ny + yvec / amount * 100) // draw pointing vector
         if ((bx - nx) ** 2 + (by - ny) ** 2 > ball.radius ** 2) {
           continue
@@ -484,6 +484,14 @@ function drawBall (x, y, radius, color) {
     ctx.fillStyle = color
   }
 
+  ctx.fill()
+  ctx.closePath()
+}
+
+function drawRedDot (x, y) {
+  ctx.beginPath()
+  ctx.arc(x, y, 3, 0, 6.2831)
+  ctx.fillStyle = '#ff0000'
   ctx.fill()
   ctx.closePath()
 }
