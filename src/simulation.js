@@ -22,15 +22,16 @@ function updateShading (flag) {
 }
 window.updateShading = updateShading
 
+// simulation and render function
 export function runSim (xMouseVec, yMouseVec, width, height, mode) {
   if (!drag && !changelight) {
     BallMove(xMouseVec, yMouseVec)
+    ForceFieldsImpact()
+    BallBallCollision(mode)
+    BallWallCollision(width, height)
+    BallRectangleCollision()
+    BallSquareCollision()
   }
-  ForceFieldsImpact()
-  BallBallCollision(mode)
-  BallWallCollision(width, height)
-  BallRectangleCollision()
-  BallSquareCollision()
 
   drawForceFields()
   if (shading) {
@@ -66,7 +67,7 @@ function drawLightPicker () {
       xOff = xMouse - x
       yOff = yMouse - y
 
-      // limits movement range of yellow picker
+      // limits movement range of yellow dot
       if ((xOff > 0 && xOff > xLimit) || (xOff < 0 && xOff < xLimit)) {
         xOff = xLimit
       }
@@ -80,16 +81,16 @@ function drawLightPicker () {
   } else {
     changelight = false
   }
-
+  // draw grey background circle
   ctx.beginPath()
   ctx.arc(x, y, radius, 0, 6.2831)
-  ctx.fillStyle = 'grey'
+  ctx.fillStyle = '#808080'
   ctx.fill()
   ctx.closePath()
-
+  // draw  light circle
   ctx.beginPath()
   ctx.arc(x + xOff, y + yOff, 10, 0, 6.2831)
-  ctx.fillStyle = 'yellow'
+  ctx.fillStyle = '#ffffff'
   ctx.fill()
   ctx.closePath()
 }
