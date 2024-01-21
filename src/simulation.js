@@ -23,7 +23,7 @@ function updateShading (flag) {
 }
 window.updateShading = updateShading
 
-// main simulation and render function
+// simulation and render function
 export function runSim (xMouseVec, yMouseVec, width, height, mode) {
   if (!drag && !changelight) {
     BallMove(xMouseVec, yMouseVec)
