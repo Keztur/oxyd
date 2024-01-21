@@ -12,6 +12,7 @@ let debug = false
 let changelight = false
 const lightAngle = [-0.4, -0.4]
 
+// connect click events with functions
 function updateDebug (flag) {
   debug = flag
 }
@@ -22,15 +23,16 @@ function updateShading (flag) {
 }
 window.updateShading = updateShading
 
+// main simulation and render function
 export function runSim (xMouseVec, yMouseVec, width, height, mode) {
   if (!drag && !changelight) {
     BallMove(xMouseVec, yMouseVec)
+    ForceFieldsImpact()
+    BallBallCollision(mode)
+    BallWallCollision(width, height)
+    BallRectangleCollision()
+    BallSquareCollision()
   }
-  ForceFieldsImpact()
-  BallBallCollision(mode)
-  BallWallCollision(width, height)
-  BallRectangleCollision()
-  BallSquareCollision()
 
   drawForceFields()
   if (shading) {
@@ -46,9 +48,11 @@ export function runSim (xMouseVec, yMouseVec, width, height, mode) {
 }
 
 function drawLightPicker () {
+  // coordinates for main circle
   const radius = 40
   const x = 50
   const y = 200
+  // offset for light dot
   let xOff = radius * lightAngle[0]
   let yOff = radius * lightAngle[1]
 
@@ -66,7 +70,7 @@ function drawLightPicker () {
       xOff = xMouse - x
       yOff = yMouse - y
 
-      // limits movement range of yellow picker
+      // limits movement range of yellow dot
       if ((xOff > 0 && xOff > xLimit) || (xOff < 0 && xOff < xLimit)) {
         xOff = xLimit
       }
@@ -80,16 +84,16 @@ function drawLightPicker () {
   } else {
     changelight = false
   }
-
+  // draw grey background circle
   ctx.beginPath()
   ctx.arc(x, y, radius, 0, 6.2831)
-  ctx.fillStyle = 'grey'
+  ctx.fillStyle = '#808080'
   ctx.fill()
   ctx.closePath()
-
+  // draw  light circle
   ctx.beginPath()
   ctx.arc(x + xOff, y + yOff, 10, 0, 6.2831)
-  ctx.fillStyle = 'yellow'
+  ctx.fillStyle = '#ffffff'
   ctx.fill()
   ctx.closePath()
 }

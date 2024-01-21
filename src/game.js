@@ -13,6 +13,7 @@ let yMouseStartDrag = 0
 let width = 10
 let height = 10
 
+let hint = true
 let mode = 2 // 1:bubbles, 2:rigid
 let obstacle = ''
 export let drag = false
@@ -20,23 +21,11 @@ export let mousedown = false
 
 resizeCanvas()
 
-// start game render cycle
-setInterval(simulation, 10)
+// firefox issue after reloading
+document.getElementById('shading').checked = false
+document.getElementById('debug').checked = false
 
-setTimeout(() => document.getElementById('hint').remove(), 8000)
-
-function drawObstacle () {
-  switch (obstacle) {
-    case 'force':
-      drawLine(xMouseStartDrag, yMouseStartDrag, xMouse, yMouse)
-      break
-    case 'rect':
-      drawRectLine()
-      break
-  }
-}
-
-window.ChangeObstacle = ChangeObstacle
+setInterval(simulation, 10) // game render cycle
 
 canvas.addEventListener('mousedown', (evt) => {
   mousedown = true
@@ -77,27 +66,16 @@ window.addEventListener('mouseup', (evt) => {
   }
 })
 
-function addRect () {
-  const width = xMouse - xMouseStartDrag
-  const height = yMouse - yMouseStartDrag
-  if (width > 1 && height > 1) {
-    addRectangle(xMouseStartDrag, yMouseStartDrag, width, height)
-  }
-}
-
-function addFF () {
-  const radius = Math.hypot(xMouse - xMouseStartDrag, yMouse - yMouseStartDrag)
-  if (radius > 1) {
-    addForceField(xMouseStartDrag, yMouseStartDrag, radius)
-  }
-}
-
 window.addEventListener('resize', resizeCanvas, false)
 
 window.addEventListener('keydown', (event) => {
   switch (event.key) {
     case ' ':
       addBall()
+      if (hint) {
+        document.getElementById('hint').remove()
+        hint = false
+      }
       break
     case 'b':
       mode = 1
@@ -127,6 +105,32 @@ function simulation () {
   }
 }
 
+function drawObstacle () {
+  switch (obstacle) {
+    case 'force':
+      drawLine(xMouseStartDrag, yMouseStartDrag, xMouse, yMouse)
+      break
+    case 'rect':
+      drawRectLine()
+      break
+  }
+}
+
+function addRect () {
+  const width = xMouse - xMouseStartDrag
+  const height = yMouse - yMouseStartDrag
+  if (width > 5 && height > 5) {
+    addRectangle(xMouseStartDrag, yMouseStartDrag, width, height)
+  }
+}
+
+function addFF () {
+  const radius = Math.hypot(xMouse - xMouseStartDrag, yMouse - yMouseStartDrag)
+  if (radius > 5) {
+    addForceField(xMouseStartDrag, yMouseStartDrag, radius)
+  }
+}
+
 function resizeCanvas () {
   canvas.width = window.innerWidth
   canvas.height = window.innerHeight
@@ -143,6 +147,8 @@ function setModeHint (mode) {
   }
 }
 
+window.ChangeObstacle = ChangeObstacle // connect click-event with function
+
 function ChangeObstacle (type) {
   Array.from(document.getElementsByClassName('active')).forEach(el => el.classList.remove('active'))
 
@@ -158,17 +164,17 @@ function ChangeObstacle (type) {
 
 function drawRectLine () {
   if (xMouse > xMouseStartDrag && yMouse > yMouseStartDrag) {
-    ctx.strokeStyle = 'red'
+    ctx.strokeStyle = '#ff0000'
     ctx.setLineDash([10, 10])
     ctx.strokeRect(xMouseStartDrag, yMouseStartDrag, xMouse - xMouseStartDrag, yMouse - yMouseStartDrag)
   }
 }
 
 function drawLine (xFrom, yFrom, xTo, yTo) {
-  ctx.strokeStyle = 'red'
-  ctx.beginPath() // Start a new path
-  ctx.moveTo(xFrom, yFrom) // Move the pen to (30, 50)
-  ctx.lineTo(xTo, yTo) // Draw a line to (150, 100)
+  ctx.strokeStyle = '#ff0000'
+  ctx.beginPath()
+  ctx.moveTo(xFrom, yFrom)
+  ctx.lineTo(xTo, yTo)
   ctx.setLineDash([10, 10])
-  ctx.stroke() // Render the path
+  ctx.stroke()
 }
